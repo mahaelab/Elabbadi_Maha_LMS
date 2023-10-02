@@ -5,30 +5,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 
-/* Maha Elabbadi, CEN-3024C-14835, 9/30/23
+/* Maha Elabbadi, CEN-3024C-14835, 10/2/23
  * The Book class represents an individual book with attributes like ID, title, and author.
  * Used to create book objects that store data about each book in the library.*/
-
 class Book {
-    private int id;
+    private int barcode;
     private String title;
     private String author;
     private String status;
     private LocalDate dueDate;
 
-    /*cMaha Elabbadi, CEN-3024C-14835, 9/30/23
-     * The Book class represents an individual book with attributes like ID, title, and author.
-     * Used to create book objects that store data about each book in the library.*/
-    public Book(int id, String title, String author) {
-        this.id = id;
+    public Book(int barcode, String title, String author) {
+        this.barcode = barcode;
         this.title = title;
         this.author = author;
-        this.status = "checked in"; // Initialize status as "checked in" by default
+        this.status = "checked in";
         this.dueDate = null;
     }
 
-    public int getId() {
-        return id;
+    public int getBarcode() {
+        return barcode;
     }
 
     public String getTitle() {
@@ -50,51 +46,47 @@ class Book {
     public LocalDate getDueDate() {
         return dueDate;
     }
+
     public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
 }
 
-/* Maha Elabbadi, CEN-3024C-14835, 9/30/23
+/* Maha Elabbadi, CEN-3024C-14835, 10/2/23
  * Manages the collection of books and provides methods for
  * adding, removing, listing, loading, and saving books. */
 class Library {
     private List<Book> books = new ArrayList<>();
-    private int nextId = 1;
+    private int nextBarcode = 1;
 
-    public int getNextId() {
-        return nextId;
+    public int getNextBarcode() {
+        return nextBarcode;
     }
 
     /* Method addBook adds a new book to the library's collection.
      * Arguments: title, author
      * No Return Value */
     public void addBook(String title, String author) {
-        // Generate the next available ID based on the maximum ID found in the current list
-        int id = books.isEmpty() ? 1 : books.stream().mapToInt(Book::getId).max().getAsInt() + 1;
-
-        Book book = new Book(id, title, author);
+        int barcode = books.isEmpty() ? 1 : books.stream().mapToInt(Book::getBarcode).max().getAsInt() + 1;
+        Book book = new Book(barcode, title, author);
         books.add(book);
-
-        // Save changes to the text file
-        saveBooksToFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\books.txt"); // Update the file path as needed
-
+        saveBooksToFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\books.txt");
     }
 
     /* Method removeBook removes books from collection based on ID
-     * Arguments: ID    Return values: true, false */
+     * Arguments: barcodeOrTitle
+     * Return values: true, false */
     public boolean removeBook(String barcodeOrTitle) {
         Iterator<Book> iterator = books.iterator();
-
         while (iterator.hasNext()) {
             Book book = iterator.next();
-            if (String.valueOf(book.getId()).equals(barcodeOrTitle) || book.getTitle().equalsIgnoreCase(barcodeOrTitle)) {
-                iterator.remove(); // Remove the book
-                saveBooksToFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\books.txt"); // Save changes to the database file
+            if (String.valueOf(book.getBarcode()).equals(barcodeOrTitle) || book.getTitle().equalsIgnoreCase(barcodeOrTitle)) {
+                iterator.remove();
+                saveBooksToFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\books.txt");
                 return true;
             }
         }
-        return false; // Book not found
+        return false;
     }
 
     /* Method List<Book> getBooks retrieves all books in the library's collection
@@ -106,37 +98,33 @@ class Library {
     /* loadDefaultBooks method loads in books from the original text file/database
      * No arguments or return value */
     public void loadDefaultBooks() {
-        // Load the original LMS database text file
         loadBooksFromFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\books.txt");
-
-        // Set nextId to 1 if there are no existing books
         if (books.isEmpty()) {
-            nextId = 1;
+            nextBarcode = 1;
         }
     }
+
     /* Method loadBookFromFIle Loads book data from a text file into the library's collection.
      * Arguments: filename
      * No return value */
     public void loadBooksFromFile(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
-            int maxId = 0; // Track the maximum ID in the existing books
+            int maxBarcode = 0;
             while ((line = br.readLine()) != null) {
                 String[] bookInfo = line.split(",");
                 if (bookInfo.length == 3) {
-                    int id = Integer.parseInt(bookInfo[0].trim());
+                    int barcode = Integer.parseInt(bookInfo[0].trim());
                     String title = bookInfo[1].trim();
                     String author = bookInfo[2].trim();
-                    maxId = Math.max(maxId, id); // Update the maximum ID
+                    maxBarcode = Math.max(maxBarcode, barcode);
                     addBook(title, author);
                 }
             }
-            // Set nextId to 1 if there are no existing books
             if (books.isEmpty()) {
-                nextId = 1;
+                nextBarcode = 1;
             } else {
-                // Update nextId to be the maximum ID + 1
-                nextId = maxId + 1;
+                nextBarcode = maxBarcode + 1;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -149,7 +137,7 @@ class Library {
     public void saveBooksToFile(String filename) {
         try (FileWriter fw = new FileWriter(filename)) {
             for (Book book : books) {
-                fw.write(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + "\n");
+                fw.write(book.getBarcode() + ", " + book.getTitle() + ", " + book.getAuthor() + "\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -164,7 +152,6 @@ class Library {
         for (Book book : books) {
             if (book.getTitle().equalsIgnoreCase(title)) {
                 if ("checked in".equalsIgnoreCase(book.getStatus())) {
-                    // Set the book as checked out and calculate the due date
                     book.setStatus("checked out");
                     book.setDueDate(LocalDate.now().plusWeeks(4));
                     return true;
@@ -186,7 +173,6 @@ class Library {
         for (Book book : books) {
             if (book.getTitle().equalsIgnoreCase(title)) {
                 if ("checked out".equalsIgnoreCase(book.getStatus())) {
-                    // Set the book as checked in and clear the due date
                     book.setStatus("checked in");
                     book.setDueDate(null);
                     return true;
@@ -201,24 +187,25 @@ class Library {
     }
 }
 
-/* Maha Elabbadi, CEN-3024C-14835, 9/30/23
+/* Maha Elabbadi, CEN-3024C-14835, 10/2/23
  * The LibraryApp class is what allows users to interact with the library management system,
  * Main objective is to help with book management tasks within the library.
  * Books are loaded from a text file when the program starts,
  * Any changes are saved back to the file*/
 public class LibraryApp {
     private static Library library = new Library();
+
     private static void loadBooksFromFile() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the path to the text file with books: ");
         String filePath = scanner.nextLine();
         library.loadBooksFromFile(filePath);
-        library.saveBooksToFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\books.txt"); // Save changes to the original file
+        library.saveBooksToFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\books.txt");
         System.out.println("Books loaded successfully from the file and saved to the database.");
     }
 
     public static void main(String[] args) {
-        library.loadDefaultBooks(); // Load the original LMS database
+        library.loadDefaultBooks();
 
         Scanner scanner = new Scanner(System.in);
 
@@ -232,7 +219,7 @@ public class LibraryApp {
             System.out.println("7. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -245,7 +232,7 @@ public class LibraryApp {
                     listBooks();
                     break;
                 case 4:
-                    loadBooksFromFile(); // Load books from a file and save to the database
+                    loadBooksFromFile();
                     break;
                 case 5:
                     checkOutBook();
@@ -267,7 +254,7 @@ public class LibraryApp {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter the title of the book to check out: ");
-        String title = scanner.nextLine(); // Use nextLine() to read the entire line of text
+        String title = scanner.nextLine();
 
         boolean checkedOut = library.checkOutBook(title);
 
@@ -275,7 +262,6 @@ public class LibraryApp {
             System.out.println("Book checked out successfully.");
         }
     }
-
 
     private static void checkInBook() {
         Scanner scanner = new Scanner(System.in);
@@ -299,10 +285,10 @@ public class LibraryApp {
         System.out.print("Enter author name: ");
         String author = scanner.nextLine();
 
-        int id = library.getNextId();
+        int barcode = library.getNextBarcode();
         library.addBook(title, author);
 
-        System.out.println("Book successfully added! New Barcode: " + id);
+        System.out.println("Book successfully added!");
     }
 
     private static void removeBook() {
@@ -330,7 +316,7 @@ public class LibraryApp {
         } else {
             System.out.println("Printing is taking place. Books in the database:");
             for (Book book : books) {
-                System.out.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor());
+                System.out.println(book.getBarcode() + ", " + book.getTitle() + ", " + book.getAuthor());
             }
         }
         System.out.println();
