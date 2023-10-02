@@ -153,7 +153,9 @@ class Library {
             if (book.getTitle().equalsIgnoreCase(title)) {
                 if ("checked in".equalsIgnoreCase(book.getStatus())) {
                     book.setStatus("checked out");
-                    book.setDueDate(LocalDate.now().plusWeeks(4));
+                    LocalDate dueDate = LocalDate.now().plusWeeks(4); // Set due date to 4 weeks from now
+                    book.setDueDate(dueDate);
+                    System.out.println("Book checked out successfully. Due Date: " + dueDate);
                     return true;
                 } else {
                     System.out.println("Error: Book is already checked out.");
@@ -174,7 +176,7 @@ class Library {
             if (book.getTitle().equalsIgnoreCase(title)) {
                 if ("checked out".equalsIgnoreCase(book.getStatus())) {
                     book.setStatus("checked in");
-                    book.setDueDate(null);
+                    book.setDueDate(null); // Set due date to null when checking in
                     return true;
                 } else {
                     System.out.println("Error: Book is already checked in.");
@@ -195,6 +197,7 @@ class Library {
 public class LibraryApp {
     private static Library library = new Library();
 
+    //calls loadBooksFromFile method where user inputs a file path. Added books are saved to database file
     private static void loadBooksFromFile() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the path to the text file with books: ");
@@ -250,6 +253,7 @@ public class LibraryApp {
         }
     }
 
+    //calls checkOutBook method to check out a book and status changes to "checked out"
     private static void checkOutBook() {
         Scanner scanner = new Scanner(System.in);
 
@@ -258,11 +262,8 @@ public class LibraryApp {
 
         boolean checkedOut = library.checkOutBook(title);
 
-        if (checkedOut) {
-            System.out.println("Book checked out successfully.");
-        }
     }
-
+    //calls checkInBook method and returns book status to checked in, due date is null if not checked out
     private static void checkInBook() {
         Scanner scanner = new Scanner(System.in);
 
@@ -275,7 +276,7 @@ public class LibraryApp {
             System.out.println("Book checked in successfully.");
         }
     }
-
+    //calls addBook method to add books using Author and Title
     private static void addBook() {
         Scanner scanner = new Scanner(System.in);
 
@@ -290,7 +291,7 @@ public class LibraryApp {
 
         System.out.println("Book successfully added! New Barcode: " + barcode);
     }
-
+    //calls removeBook method to add books using Author and Title
     private static void removeBook() {
         Scanner scanner = new Scanner(System.in);
 
@@ -308,7 +309,7 @@ public class LibraryApp {
         // Reprint the updated database from the LibraryApp class
         listBooks();
     }
-
+    //calls listBooks method to list all books currently in the database file collection
     private static void listBooks() {
         List<Book> books = library.getBooks();
         if (books.isEmpty()) {
