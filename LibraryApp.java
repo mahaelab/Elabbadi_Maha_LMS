@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 
-/* Maha Elabbadi, CEN-3024C-14835, 10/2/23
+/* Maha Elabbadi, CEN-3024C-14835, 9/30/23
  * The Book class represents an individual book with attributes like ID, title, and author.
  * Used to create book objects that store data about each book in the library.*/
 class Book {
@@ -52,7 +52,7 @@ class Book {
     }
 }
 
-/* Maha Elabbadi, CEN-3024C-14835, 10/2/23
+/* Maha Elabbadi, CEN-3024C-14835, 9/30/23
  * Manages the collection of books and provides methods for
  * adding, removing, listing, loading, and saving books. */
 class Library {
@@ -187,7 +187,7 @@ class Library {
     }
 }
 
-/* Maha Elabbadi, CEN-3024C-14835, 10/2/23
+/* Maha Elabbadi, CEN-3024C-14835, 9/30/23
  * The LibraryApp class is what allows users to interact with the library management system,
  * Main objective is to help with book management tasks within the library.
  * Books are loaded from a text file when the program starts,
@@ -288,7 +288,7 @@ public class LibraryApp {
         int barcode = library.getNextBarcode();
         library.addBook(title, author);
 
-        System.out.println("Book successfully added!");
+        System.out.println("Book successfully added! New Barcode: " + barcode);
     }
 
     private static void removeBook() {
