@@ -13,3 +13,19 @@
 13, Brave New World, Aldous Huxley
 14, The Chronicles of Narnia, C.S. Lewis
 15, The Hitchhiker's Guide to the Galaxy, Douglas Adams
+16, To Kill a Mockingbird, Harper Lee
+17, Moby-Dick, Herman Melville
+18, One Hundred Years of Solitude, Gabriel Garcia Marquez
+19, Catch-22, Joseph Heller
+20, The Grapes of Wrath, John Steinbeck
+21, Fahrenheit 451, Ray Bradbury
+22, Crime and Punishment, Fyodor Dostoevsky
+23, The Picture of Dorian Gray, Oscar Wilde
+24, The Brothers Karamazov, Fyodor Dostoevsky
+25, Don Quixote, Miguel de Cervantes
+26, Wuthering Heights, Emily Brontë
+27, The Count of Monte Cristo, Alexandre Dumas
+28, Jane Eyre, Charlotte Brontë
+29, The Odyssey, Homer
+30, Alice's Adventures in Wonderland, Lewis Carroll
+
