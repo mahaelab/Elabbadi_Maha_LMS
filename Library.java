@@ -8,6 +8,8 @@ import java.util.List;
  * Manages the collection of books and provides methods for
  * adding, removing, listing, loading, and saving books. */
 class Library {
+    private LocalDate dueDate;
+
     private List<Book> books = new ArrayList<>();
     private int nextBarcode = 1;
     public int getNextBarcode() {
@@ -47,9 +49,13 @@ class Library {
     /* loadDefaultBooks method loads in books from the original text file/database
      * No arguments or return value */
     public void loadDefaultBooks() {
-        loadBooksFromFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\main\\java\\books.txt");
         if (books.isEmpty()) {
-            nextBarcode = 1;
+            loadBooksFromFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\main\\java\\books.txt");
+            if (books.isEmpty()) {
+                nextBarcode = 1;
+            } else {
+                nextBarcode = books.stream().mapToInt(Book::getBarcode).max().getAsInt() + 1;
+            }
         }
     }
 
@@ -113,7 +119,7 @@ class Library {
             if (book.getTitle().equalsIgnoreCase(title)) {
                 if ("checked in".equalsIgnoreCase(book.getStatus())) {
                     book.setStatus("checked out");
-                    LocalDate dueDate = LocalDate.now().plusWeeks(4); // Set due date to 4 weeks from now
+                    dueDate = LocalDate.now().plusWeeks(4); // Set due date to 4 weeks from now
                     book.setDueDate(dueDate);
                     System.out.println("Book checked out successfully. Due Date: " + dueDate);
                     return true;
@@ -127,6 +133,11 @@ class Library {
         return false;
     }
 
+    // Getter for dueDate
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
     /* Method checkInBook checks in a book by title.
      * Arguments: title
      * Return value: true if the book is successfully checked in, false otherwise
@@ -137,14 +148,12 @@ class Library {
                 if ("checked out".equalsIgnoreCase(book.getStatus())) {
                     book.setStatus("checked in");
                     book.setDueDate(null); // Set due date to null when checking in
-                    return true;
+                    return true; // Book checked in successfully
                 } else {
-                    System.out.println("Error: Book is already checked in.");
-                    return false;
+                    return false; // Book is already checked in
                 }
             }
         }
-        System.out.println("Error: Book not found.");
-        return false;
+        return false; // Book not found
     }
 }
