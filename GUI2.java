@@ -324,17 +324,31 @@ public class GUI2 {
         // Checking in a book changes status to "Checked-In" and due date = null
         checkInButton.addActionListener(e -> {
             String title = JOptionPane.showInputDialog("Enter the title of the book to check in:");
-            String updateQuery = "UPDATE books SET status = 'Checked-In', due_date = null WHERE title = ?";
-            try (Connection connection = DatabaseConnection.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
-                preparedStatement.setString(1, title);
-                int rowsAffected = preparedStatement.executeUpdate();
+            String selectQuery = "SELECT * FROM books WHERE title = ? AND status = 'Checked-Out'";
+            String updateQuery = "UPDATE books SET status = 'Checked-In', due_date = null WHERE title = ? AND status = 'Checked-Out'";
 
-                if (rowsAffected > 0) {
-                    outputArea.setText("Book checked in successfully.\nDue Date: null");
+            try (Connection connection = DatabaseConnection.getConnection();
+                 PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
+                 PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+
+                // Checks if the book is Checked-Out
+                selectStatement.setString(1, title);
+                ResultSet resultSet = selectStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    // If book is Checked-Out, update status to Checked-In
+                    updateStatement.setString(1, title);
+                    int rowsAffected = updateStatement.executeUpdate();
+
+                    if (rowsAffected > 0) {
+                        outputArea.setText("Book checked in successfully.\nDue Date: null");
+                    } else {
+                        outputArea.setText("Error: Book not found or already checked in.");
+                    }
                 } else {
                     outputArea.setText("Error: Book not found or already checked in.");
                 }
+
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 outputArea.setText("Error: Unable to check in the book.");
@@ -342,26 +356,43 @@ public class GUI2 {
         });
 
 
+
         // Action listener for the check out button
         // Once checked out, the status changes to "Checked-Out" and due date is 3 weeks from the current date
         checkOutButton.addActionListener(e -> {
             String title = JOptionPane.showInputDialog("Enter the title of the book to check out:");
-            String updateQuery = "UPDATE books SET status = 'Checked-Out', due_date = DATE_ADD(NOW(), INTERVAL 3 WEEK) WHERE title = ?";
-            try (Connection connection = DatabaseConnection.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
-                preparedStatement.setString(1, title);
-                int rowsAffected = preparedStatement.executeUpdate();
+            String selectQuery = "SELECT * FROM books WHERE title = ? AND status = 'Checked-In'";
+            String updateQuery = "UPDATE books SET status = 'Checked-Out', due_date = DATE_ADD(NOW(), INTERVAL 4 WEEK) WHERE title = ? AND status = 'Checked-In'";
 
-                if (rowsAffected > 0) {
-                    outputArea.setText("Book checked out successfully. \nDue Date: " + LocalDate.now().plusWeeks(4));
+            try (Connection connection = DatabaseConnection.getConnection();
+                 PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
+                 PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+
+                // Checks if the book is Checked-In
+                selectStatement.setString(1, title);
+                ResultSet resultSet = selectStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    // If book is Checked-In, update status to Checked-Out
+                    updateStatement.setString(1, title);
+                    int rowsAffected = updateStatement.executeUpdate();
+
+                    if (rowsAffected > 0) {
+                        outputArea.setText("Book checked out successfully. \nDue Date: " + LocalDate.now().plusWeeks(4));
+                    } else {
+                        outputArea.setText("Error: Book not found.");
+                    }
                 } else {
+                   
                     outputArea.setText("Error: Book not found or already checked out.");
                 }
+
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 outputArea.setText("Error: Unable to check out the book.");
             }
         });
+
 
 
         frame.setSize(800, 600);
