@@ -5,38 +5,41 @@ import java.io.File;
 import java.util.List;
 import java.time.LocalDate;
 
-//
-// * Maha Elabbadi, CEN-3024C-14835, 10/27/23
-// * The LibraryGUI class is what represents the main GUI application
-// * It contains buttons for the methods from the Library and Book classes,
-// * making it easier for users to use and navigate*/
+
+/** Maha Elabbadi, CEN-3024C-14835, 11/14/23
+   The LibraryGUI class is what represents the main GUI application
+   It contains buttons for the methods from the Library, Book, and LibraryApp classes,
+   making it easier for users to use and navigate
+ */
 public class LibraryGUI {
     private static Library library = new Library();
     private static JButton clearButton;
     private static JPanel buttonPanel;
 
-    // Main method to start the GUI application
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            createAndShowGUI(); // Call the method to create and show the GUI
+            createAndShowGUI();
         });
     }
 
-    /*  createAndShowGUI method creates and shows the GUI components that users will
-        be able to interact with */
+    /** createAndShowGUI method creates and shows the GUI components that users will
+        be able to interact with
+     */
     private static void createAndShowGUI() {
         JFrame frame = new JFrame("Library Management System");
 
         JButton clearButton = new JButton("Clear");
 
-        // Sets close action and layout manager for the frame
+        /** Sets close action and layout manager for the frame
+         */
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(0, 1, 0, 10)); // 1 column, any number of rows, vertical gap of 10 pixels
 
-        // Adds buttons to the button panel
+        /** Adds buttons to the button panel
+         */
         JButton fileButton = new JButton("Load from File");
         JButton addButton = new JButton("Add Book");
         JButton removeButton = new JButton("Remove Book");
@@ -59,7 +62,6 @@ public class LibraryGUI {
         outputArea.setAlignmentX(Component.CENTER_ALIGNMENT);
         outputArea.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        // Create an empty border to add some padding around the text area
         int padding = 20;
         outputArea.setBorder(new EmptyBorder(padding, padding, padding, padding));
 
@@ -68,13 +70,12 @@ public class LibraryGUI {
         frame.add(buttonPanel, BorderLayout.WEST);
         frame.add(textPanel, BorderLayout.CENTER);
 
-        // Action listener for the Add button
+        /** Action listener for the Add button
+          */
         addButton.addActionListener(e -> {
-            // Prompt the user for book title and author
             String title = JOptionPane.showInputDialog("Enter book title:");
             String author = JOptionPane.showInputDialog("Enter author name:");
 
-            // Check if valid input, add the book to the library, and update output area
             if (title != null && !title.trim().isEmpty() && author != null && !author.trim().isEmpty()) {
                 library.addBook(title, author);
                 library.saveChanges();
@@ -84,18 +85,22 @@ public class LibraryGUI {
             }
         });
 
-        // Action listener for the Load from File button
+        /** Action listener for the load from File button
+          */
         fileButton.addActionListener(e -> {
-            // File chooser dialog to select a file
+            /** File chooser dialog to select a file
+              */
             JFileChooser fileChooser = new JFileChooser();
             int response = fileChooser.showDialog(null, "Select File");
 
-            // Handle the selected file
+            /** Handles the selected file
+              */
             if (response == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 String filePath = selectedFile.getAbsolutePath();
 
-                // Load or save books based on file existence
+                /** Load or save books based on file existence
+                  */
                 if (selectedFile.exists() && selectedFile.isFile()) {
                     library.loadBooksFromFile(filePath);
                     outputArea.setText("Books loaded successfully from file: " + filePath);
@@ -108,7 +113,8 @@ public class LibraryGUI {
             }
         });
 
-        // Action listener for the Remove Book button
+        /** Action listener for the Remove Book button
+          */
         removeButton.addActionListener(e -> {
             String barcodeOrTitle = JOptionPane.showInputDialog("Enter the barcode number or title of the book to remove:");
             boolean removed = library.removeBook(barcodeOrTitle);
@@ -132,7 +138,8 @@ public class LibraryGUI {
             }
         });
 
-        // Action listener for the List Books button
+        /** Action listener for the List Books button
+          */
         listButton.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
                 outputArea.setText("");
@@ -150,12 +157,14 @@ public class LibraryGUI {
             });
         });
 
-        // Action listener for the Clear button
+        /** Action listener for the Clear button
+         */
         clearButton.addActionListener(e -> {
             outputArea.setText(""); // Clears the output area
         });
 
-        // Action listener for the Check In button
+        /** Action listener for the Check In button
+          */
         checkInButton.addActionListener(e -> {
             String title = JOptionPane.showInputDialog("Enter the title of the book to check in:");
             boolean checkedIn = library.checkInBook(title);
@@ -166,7 +175,8 @@ public class LibraryGUI {
             }
         });
 
-        // Action listener for the Check Out button
+        /** Action listener for the Check Out button
+         */
         checkOutButton.addActionListener(e -> {
             String title = JOptionPane.showInputDialog("Enter the title of the book to check out:");
             boolean checkedOut = library.checkOutBook(title);
