@@ -1,8 +1,10 @@
 import java.time.LocalDate;
 
-/* Maha Elabbadi, CEN-3024C-14835, 9/30/23
- * The Book class represents an individual book with attributes like ID, title, and author.
- * Used to create book objects that store data about each book in the library.*/
+/**
+ *  Maha Elabbadi, CEN-3024C-14835, 11/14/23
+ * The Book class represents an individual book with the attributes barcode , title, author, status, and due date.
+ * Used to create book objects that store data about each book in the library.
+ * */
 class Book {
     private int barcode;
     private String title;
