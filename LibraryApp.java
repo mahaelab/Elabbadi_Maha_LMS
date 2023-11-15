@@ -11,7 +11,8 @@ import java.util.Scanner;
 public class LibraryApp {
     private static Library library = new Library();
 
-    //calls loadBooksFromFile method where user inputs a file path. Added books are saved to database file
+   /** Calls loadBooksFromFile method where user inputs a file path. Added books are saved to database file
+     */
     private static void loadBooksFromFile() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the path to the text file with books: ");
