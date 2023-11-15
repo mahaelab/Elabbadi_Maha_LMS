@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/* Maha Elabbadi, CEN-3024C-14835, 9/30/23
- * Manages the collection of books and provides methods for
- * adding, removing, listing, loading, and saving books. */
+/** Maha Elabbadi, CEN-3024C-14835, 11/14/23
+ * The Library class manages the collection of books and provides methods for
+ * adding, removing, listing, loading, checkin in and out, and saving books.
+ * This was the main component which allowed the older version of the program to run and interact
+ * with a text file database.
+ * */
 class Library {
     private LocalDate dueDate;
 
@@ -15,19 +18,24 @@ class Library {
     public int getNextBarcode() {
         return nextBarcode;
     }
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
 
-    /* Method addBook adds a new book to the library's collection.
-     * Arguments: title, author
-     * No Return Value */
+    /** Method addBook adds a new book to the library's collection using user input.
+     * @param title, author
+     * @return none
+     * */
     public void addBook(String title, String author) {
         int barcode = books.isEmpty() ? 1 : books.stream().mapToInt(Book::getBarcode).max().getAsInt() + 1;
         Book book = new Book(barcode, title, author);
         books.add(book);
     }
 
-    /* Method removeBook removes books from collection based on ID
-     * Arguments: barcodeOrTitle
-     * Return values: true, false */
+    /** Method removeBook removes books from collection based on barcode or title via user input
+     * @param barcodeOrTitle
+     * @return true, false
+     * */
     public boolean removeBook(String barcodeOrTitle) {
         Iterator<Book> iterator = books.iterator();
         while (iterator.hasNext()) {
@@ -40,14 +48,17 @@ class Library {
         return false;
     }
 
-    /* Method List<Book> getBooks retrieves all books in the library's collection
-     * No arguments. Return value are books. If there are none, empty list is returned*/
+    /** Method List<Book> getBooks retrieves all books in the library's collection
+     * @return none
+     * */
     public List<Book> getBooks() {
         return books;
     }
 
-    /* loadDefaultBooks method loads in books from the original text file/database
-     * No arguments or return value */
+    /** loadDefaultBooks method loads in books from the original text file database so that the
+     * program is preloaded with a library of books
+     * @return none
+     * */
     public void loadDefaultBooks() {
         if (books.isEmpty()) {
             loadBooksFromFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\main\\java\\books.txt");
@@ -59,9 +70,10 @@ class Library {
         }
     }
 
-    /* Method loadBookFromFIle Loads book data from a text file into the library's collection.
-     * Arguments: filename
-     * No return value */
+    /** Method loadBookFromFIle Loads book data from a text file into the library's collection.
+     * @param filename
+     * @return none
+     * */
     public void loadBooksFromFile(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -86,33 +98,34 @@ class Library {
         }
     }
 
-    /* saveBooksToFile method saves changes or any new books added to the original database text file
-     * Arguments: filename
-     * No return value */
+    /** saveBooksToFile method saves changes or any new books added to the original database text file
+     * @param filename
+     * @return none
+     * */
     public void saveBooksToFile(String filename) {
         try {
             File file = new File(filename);
-            System.out.println("Saving books to file: " + file.getAbsolutePath()); // Print the absolute file path
+            System.out.println("Saving books to file: " + file.getAbsolutePath());
             FileWriter fw = new FileWriter(file);
             for (Book book : books) {
                 fw.write(book.getBarcode() + ", " + book.getTitle() + ", " + book.getAuthor() + "\n");
             }
-            fw.close(); // Close the file writer after writing to the file
+            fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /* Method saveChanges saves the books to the file and is called when needed
-     * Arguments: None
-     * No return value */
+    /** Method saveChanges saves the books to the file and is called when needed
+     * @return none
+     * */
     public void saveChanges() {
         saveBooksToFile("C:\\Users\\Maha\\Desktop\\LibraryApp\\src\\main\\java\\books.txt");
     }
 
-    /* Method checkOutBook is used to check out a book by title.
-     * Arguments: title
-     * Return value: true if the book is successfully checked out, false otherwise
+    /** Method checkOutBook is used to check out a book by title.
+     * @param  title
+     * @return true (if successfully checked out), false
      */
     public boolean checkOutBook(String title) {
         for (Book book : books) {
@@ -133,14 +146,11 @@ class Library {
         return false;
     }
 
-    // Getter for dueDate
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
 
-    /* Method checkInBook checks in a book by title.
-     * Arguments: title
-     * Return value: true if the book is successfully checked in, false otherwise
+
+    /** Method checkInBook checks in a book by title.
+     * @param title
+     * @return true (if successfully checked in), false
      */
     public boolean checkInBook(String title) {
         for (Book book : books) {
