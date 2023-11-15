@@ -1,11 +1,12 @@
 import java.util.List;
 import java.util.Scanner;
 
-/* Maha Elabbadi, CEN-3024C-14835, 9/30/23
+/** Maha Elabbadi, CEN-3024C-14835, 11/14/23
  * The LibraryApp class is what allows users to interact with the library management system,
- * Main objective is to help with book management tasks within the library.
+ * Main objective for the program is to help with book management tasks within the library.
  * Books are loaded from a text file when the program starts,
- * Any changes are saved back to the file*/
+ * Any changes are saved back to the file
+ * */
 
 public class LibraryApp {
     private static Library library = new Library();
@@ -67,7 +68,9 @@ public class LibraryApp {
     }
 
 
-    //calls addBook method to add books using Author and Title
+    /**
+     * Calls addBook method to add books using @params Author and Title
+     */
     private static void addBook() {
         Scanner scanner = new Scanner(System.in);
 
@@ -84,7 +87,10 @@ public class LibraryApp {
         // save changes to the file after adding a book
         library.saveChanges();
     }
-    //calls removeBook method to add books using Author and Title
+
+    /**
+     * Calls removeBook method to add books @param Author and Title
+     */
     private static void removeBook() {
         Scanner scanner = new Scanner(System.in);
 
@@ -105,7 +111,9 @@ public class LibraryApp {
         listBooks();
     }
 
-    //calls checkOutBook method to check out a book and status changes to "checked out"
+    /**
+     * Calls checkOutBook method to check out a book and status changes to "checked out"
+     */
     private static void checkOutBook() {
         Scanner scanner = new Scanner(System.in);
 
@@ -115,7 +123,11 @@ public class LibraryApp {
         boolean checkedOut = library.checkOutBook(title);
 
     }
-    //calls checkInBook method and returns book status to checked in, due date is null if not checked out
+
+    /**
+     * Calls checkInBook method and returns book status to checked in.
+     * Due date is null if not checked out
+     */
     private static void checkInBook() {
         Scanner scanner = new Scanner(System.in);
 
@@ -128,7 +140,10 @@ public class LibraryApp {
             System.out.println("Book checked in successfully.");
         }
     }
-    //calls listBooks method to list all books currently in the database file collection
+
+    /**
+     * Calls listBooks method to list all books currently in the database file collection
+     */
     private static void listBooks() {
         List<Book> books = library.getBooks();
         if (books.isEmpty()) {
