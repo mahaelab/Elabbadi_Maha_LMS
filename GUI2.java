@@ -9,9 +9,10 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.Scanner;
 
-// * Maha Elabbadi, CEN-3024C-14835, 11/3/23
-// * The GUI2 class is what represents the main GUI application which interacts directly with the database
-// * It contains buttons and unique methods meant for direct interaction with the database
+/** Maha Elabbadi, CEN-3024C-14835, 11/14/23
+ * The GUI2 class is what represents the main GUI application which interacts directly with the database
+ * It contains buttons and unique methods meant for direct interaction with the database
+  */
 public class GUI2 {
     private static Library library = new Library();
     private static JButton clearButton;
@@ -19,7 +20,8 @@ public class GUI2 {
     private static Connection connection; // Define the connection variable at the class level
 
 
-    // Main method to start the GUI application
+    /** Main method to start the GUI application
+      */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             createAndShowGUI(); // Call the method to create and show the GUI
@@ -27,7 +29,7 @@ public class GUI2 {
     }
 
 
-    /*  createAndShowGUI method creates and shows the GUI components that users will
+    /**  createAndShowGUI method creates and shows the GUI components that users will
         be able to interact with. It contains the GUI layout code, buttons, and action listeners */
     private static void createAndShowGUI() {
         JFrame frame = new JFrame("Library Management System");
@@ -52,7 +54,8 @@ public class GUI2 {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
-        // Connects to the database and error handling
+        /** Connects to the database and error handling
+          */
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             String url = "jdbc:mysql://localhost:3306/library_database";
@@ -63,8 +66,8 @@ public class GUI2 {
             e.printStackTrace();
         }
 
-
-        // Adds buttons to the button panel
+        /** Adds buttons to the button panel
+          */
         JButton fileButton = new JButton("Load from File");
         JButton addButton = new JButton("Add Book");
         JButton removeButton = new JButton("Remove Book");
@@ -100,19 +103,22 @@ public class GUI2 {
         frame.add(textPanel, BorderLayout.CENTER);
 
 
-        // Action listener for the add book button. Adds book directly to DB
-        // Distinct methods were created specifically for each listener
-        // In order to interact with the database
-        // Since previous methods were associated with interacting with a text file instead of a DB
+        /** Action listener for the add book button. Adds book directly to DB
+        * Distinct methods were created specifically for each listener
+        * In order to interact with the database
+        * Since previous methods were associated with interacting with a text file instead of a DB
+         */
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Prompt the user for book details
+                /** Prompt the user for book details
+                  */
                 String title = JOptionPane.showInputDialog("Enter book title:");
                 String author = JOptionPane.showInputDialog("Enter author name:");
                 String genre = JOptionPane.showInputDialog("Enter genre:");
 
-                // Check if any of the input fields are empty or null
+                /** Checks if any of the input fields are empty or null
+                 */
                 if (title == null || title.trim().isEmpty() ||
                         author == null || author.trim().isEmpty() ||
                         genre == null || genre.trim().isEmpty()) {
@@ -120,7 +126,8 @@ public class GUI2 {
                     return;
                 }
 
-                // Database interaction code
+                /** Database interaction code
+                 */
                 String query = "SELECT MIN(barcode) + 1 FROM books WHERE barcode + 1 NOT IN (SELECT barcode FROM books)";
                 try (Connection connection = DatabaseConnection.getConnection();
                      Statement statement = connection.createStatement();
@@ -131,10 +138,11 @@ public class GUI2 {
                         missingBarcode = resultSet.getInt(1);
                     }
 
-                    // This ensures that there is no gap in barcode numbers.
-                    // (Ex. If a book is removed, that previous barcode will be taken by another newly added book
-                    // To make sure there aren't huge gaps in barcodes and keep the list sequential
-                    // It also defaults new books to the "Checked-In" status and due date is null
+                    /** This ensures that there is no gap in barcode numbers.
+                     * (Ex. If a book is removed, that previous barcode will be taken by another newly added book
+                     * To make sure there aren't huge gaps in barcodes and keep the list sequential
+                     * It also defaults new books to the "Checked-In" status and due date is null
+                      */
                     String insertQuery = "INSERT INTO books (barcode, title, author, genre, status, due_date) VALUES (?, ?, ?, ?, ?, null)";
                     try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
                         preparedStatement.setInt(1, missingBarcode);
@@ -157,20 +165,23 @@ public class GUI2 {
             }
         });
 
-
-        // Action listener for the load from file button. Allows users to open a text file from their computer
-        // And add it directly to the DB
+        /** Action listener for the load from file button. Allows users to open a text file from their computer
+         * And add it directly to the DB
+          */
         fileButton.addActionListener(e -> {
-            // File chooser dialog to select a file
+            /** Opens file chooser dialog to select a file
+              */
             JFileChooser fileChooser = new JFileChooser();
             int response = fileChooser.showDialog(null, "Select File");
 
-            // Handle the selected file
+            /** Handles the selected file
+             */
             if (response == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 String filePath = selectedFile.getAbsolutePath();
 
-                // Get the maximum existing barcode from the database so the barcodes remain sequential
+                /** Gets the maximum existing barcode from the database so the barcodes remain sequential
+                  */
                 int maxBarcode = 0;
                 String maxBarcodeQuery = "SELECT MAX(barcode) FROM books";
                 try (Connection connection = DatabaseConnection.getConnection();
@@ -185,7 +196,9 @@ public class GUI2 {
                     return; // Exit the method if an error occurs
                 }
 
-                // Read book information from the file and insert into the database with sequential and unique barcodes
+                /** Read book information from the file and insert into the database with
+                 * sequential and unique barcodes
+                  */
                 try (Scanner scanner = new Scanner(selectedFile)) {
                     while (scanner.hasNextLine()) {
                         String bookInfo = scanner.nextLine();
@@ -195,10 +208,12 @@ public class GUI2 {
                             String author = bookData[2];
                             String genre = bookData[3];
 
-                            // Generate a unique and sequential barcode for the book
+                            /** Generate a unique and sequential barcode for the book
+                              */
                             int uniqueBarcode = ++maxBarcode;
 
-                            // Insert book information into the database with the unique and sequential barcode
+                            /** Insert book information into the database with the unique and sequential barcode
+                              */
                             String insertQuery = "INSERT INTO books (barcode, title, author, genre, status) VALUES (?, ?, ?, ?, 'Checked-In')";
                             try (Connection connection = DatabaseConnection.getConnection();
                                  PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
@@ -222,9 +237,9 @@ public class GUI2 {
             }
         });
 
-
-        // Action listener for the remove book button
-        // Removes book from the DB and updates list
+        /**Action listener for the remove book button
+         * Removes book from the DB and updates list
+          */
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -258,14 +273,16 @@ public class GUI2 {
                     resultMessage = "Error: Couldn't remove book from the database.";
                 }
 
-                // Update the GUI output area with the result message
+                /** Update the GUI output area with the result message
+                  */
                 outputArea.setText(resultMessage);
             }
         });
 
 
-        // Action listener for the list books button
-        // Lists all books available in the DB
+        /** Action listener for the list books button
+         * Lists all books available in the DB
+          */
         listButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -314,14 +331,16 @@ public class GUI2 {
         });
 
 
-        // Action listener for the clear button (it just clears text from the screen)
+        /** Action listener for the clear button (it just clears text from the screen)
+          */
         clearButton.addActionListener(e -> {
             outputArea.setText("");
         });
 
 
-        // Action listener for the check in button
-        // Checking in a book changes status to "Checked-In" and due date = null
+        /** Action listener for the check in button
+         * Checking in a book changes status to "Checked-In" and due date = null
+          */
         checkInButton.addActionListener(e -> {
             String title = JOptionPane.showInputDialog("Enter the title of the book to check in:");
             String selectQuery = "SELECT * FROM books WHERE title = ? AND status = 'Checked-Out'";
@@ -331,12 +350,14 @@ public class GUI2 {
                  PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
                  PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
 
-                // Checks if the book is Checked-Out
+                /** Checks if the book is checked-out
+                  */
                 selectStatement.setString(1, title);
                 ResultSet resultSet = selectStatement.executeQuery();
 
                 if (resultSet.next()) {
-                    // If book is Checked-Out, update status to Checked-In
+                    /** If book is checked-out, this updates status to checked-In
+                     */
                     updateStatement.setString(1, title);
                     int rowsAffected = updateStatement.executeUpdate();
 
@@ -355,10 +376,10 @@ public class GUI2 {
             }
         });
 
+        /** Action listener for the check-out button
+         * Once checked out, the status changes to "Checked-Out" and due date is 3 weeks from the current date
+          */
 
-
-        // Action listener for the check out button
-        // Once checked out, the status changes to "Checked-Out" and due date is 3 weeks from the current date
         checkOutButton.addActionListener(e -> {
             String title = JOptionPane.showInputDialog("Enter the title of the book to check out:");
             String selectQuery = "SELECT * FROM books WHERE title = ? AND status = 'Checked-In'";
@@ -368,12 +389,15 @@ public class GUI2 {
                  PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
                  PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
 
-                // Checks if the book is Checked-In
+                /** Checks if the book is checked-in
+                  */
+
                 selectStatement.setString(1, title);
                 ResultSet resultSet = selectStatement.executeQuery();
 
                 if (resultSet.next()) {
-                    // If book is Checked-In, update status to Checked-Out
+                    /** If book is Checked-In, update status to checked-out
+                      */
                     updateStatement.setString(1, title);
                     int rowsAffected = updateStatement.executeUpdate();
 
@@ -383,7 +407,7 @@ public class GUI2 {
                         outputArea.setText("Error: Book not found.");
                     }
                 } else {
-                   
+
                     outputArea.setText("Error: Book not found or already checked out.");
                 }
 
@@ -392,8 +416,6 @@ public class GUI2 {
                 outputArea.setText("Error: Unable to check out the book.");
             }
         });
-
-
 
         frame.setSize(800, 600);
         frame.setVisible(true);
